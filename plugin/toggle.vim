@@ -20,6 +20,7 @@
 "  define   <->     undef
 "  ||       <->     &&
 "  &&       <->     ||
+"  public   <->     private     <->     protected
 "
 "  If cursor is positioned on a number, the function looks for a + 
 "  or - sign in front of that number and toggels it. If the number
@@ -59,10 +60,10 @@
 " v0.1, 1 Feb 2004
 "   - first Version to be distributed... (not yet on vim.org)
 
-" if exists("loaded_toggle")
-"     finish
-" endif
-" let loaded_toggle=1
+if exists("loaded_toggle")
+    finish
+endif
+let loaded_toggle=1
 
 let s:save_cpo = &cpo
 set cpo&vim
@@ -78,6 +79,14 @@ vmap + <ESC>:call Toggle()<CR>
 " imap <C-M-T> <C-O>:call Toggle()<CR>
 " nmap <C-M-T> :call Toggle()<CR>
 " vmap <C-M-T> <ESC>:call Toggle()<CR>
+
+" pair configuration
+" let g:toggle_pairs = { 'and':'or', 'or':'and', 'foo':'var', 'var':'foo' }
+if exists('g:toggle_pairs')
+    let s:toggle_pairs = g:toggle_pairs
+else
+    let s:toggle_pairs = []
+endif
 
 " some Helper functions {{{
 function! s:Toggle_changeChar(string, pos, char)
@@ -223,12 +232,34 @@ function! Toggle() "{{{
         elseif (s:wordUnderCursor ==? "no")
             let s:wordUnderCursor_tmp = "yes"
             let s:toggleDone = 1
+
         elseif (s:wordUnderCursor ==? "define")
             let s:wordUnderCursor_tmp = "undef"
             let s:toggleDone = 1
         elseif (s:wordUnderCursor ==? "undef")
             let s:wordUnderCursor_tmp = "define"
             let s:toggleDone = 1
+
+        elseif (s:wordUnderCursor ==? "public")
+            let s:wordUnderCursor_tmp = "private"
+            let s:toggleDone = 1
+        elseif (s:wordUnderCursor ==? "private")
+            let s:wordUnderCursor_tmp = "protected"
+            let s:toggleDone = 1
+        elseif (s:wordUnderCursor ==? "protected")
+            let s:wordUnderCursor_tmp = "public"
+            let s:toggleDone = 1
+
+        else
+            " custom pairs
+            for l:k in keys(g:toggle_pairs)
+                if (s:wordUnderCursor ==? l:k)
+                    let s:wordUnderCursor_tmp = g:toggle_pairs[l:k]
+                    let s:toggleDone = 1
+                    break
+                endif
+            endfor
+
         endif
 
          " preserve case (provided by Jan Christoph Ebersbach)
