@@ -6,6 +6,9 @@
 " Date: 06 Feb 2004
 " Licence: GPL v2.0
 "
+" Author: (Forked) Taku Omi
+" Email: mail@nanasi.jp
+"
 " Usage:
 " Drop into your plugin directory, Pressing Control-T toggles
 " value under cursor in insert-mode. In normal/visual mode,
@@ -39,6 +42,11 @@
 "   in visual mode?
 "
 " Changelog:
+" v 0.5-forked, 21 June 2011
+"   - forked.
+"   - private,public,protected toggle changing is supported.
+"   - g:toggle_pairs option is added.
+"   - custom key map is supported.
 " v 0.5, 15 September 2010
 "   - case insensitive toggling, keep case
 "   - Bugfix for && and ||
@@ -68,26 +76,38 @@ let loaded_toggle=1
 let s:save_cpo = &cpo
 set cpo&vim
 
-imap <C-T> <C-O>:call Toggle()<CR>
-nmap + :call Toggle()<CR>
-vmap + <ESC>:call Toggle()<CR>
+"--------------------------------------------------
+" set your custom mapping in your vimrc.
+"
+"   imap <C-C> <Plug>ToggleI
+"   nmap <C-C> <Plug>ToggleN
+"   vmap <C-C> <Plug>ToggleV
+"
+if !has('<Plug>ToggleI')
+    imap <C-T> <Plug>ToggleI
+endif
+inoremap <Plug>ToggleI <C-O>:call <SID>Toggle()<CR>
+
+if !has('<Plug>ToggleN')
+    nmap + <Plug>ToggleN
+endif
+nnoremap <Plug>ToggleN :call <SID>Toggle()<CR>
+
+if !has('<Plug>ToggleV')
+    vmap + <Plug>ToggleV
+endif
+vnoremap <Plug>ToggleV <ESC>:call <SID>Toggle()<CR>
 
 "--------------------------------------------------
-" If you don't want to break the standard <C-T> assignments,
-" you could use these, or of course define your own ones...
-"
-" imap <C-M-T> <C-O>:call Toggle()<CR>
-" nmap <C-M-T> :call Toggle()<CR>
-" vmap <C-M-T> <ESC>:call Toggle()<CR>
-
-" pair configuration
-" let g:toggle_pairs = { 'and':'or', 'or':'and', 'foo':'var', 'var':'foo' }
+" optional toggle pair configuration
+" :let g:toggle_pairs = { 'and':'or', 'or':'and', 'if':'elsif', 'elsif':'else', 'else':'if' }
 if exists('g:toggle_pairs')
     let s:toggle_pairs = g:toggle_pairs
 else
     let s:toggle_pairs = []
 endif
 
+"--------------------------------------------------
 " some Helper functions {{{
 function! s:Toggle_changeChar(string, pos, char)
   return strpart(a:string, 0, a:pos) . a:char . strpart(a:string, a:pos+1)
@@ -102,7 +122,7 @@ function! s:Toggle_changeString(string, beginPos, endPos, newString)
 endfunction
 " }}}
 
-function! Toggle() "{{{
+function! s:Toggle() "{{{
     " save values which we have to change temporarily:
     let s:lineNo = line(".")
     let s:columnNo = col(".")
@@ -252,9 +272,9 @@ function! Toggle() "{{{
 
         else
             " custom pairs
-            for l:k in keys(g:toggle_pairs)
+            for l:k in keys(s:toggle_pairs)
                 if (s:wordUnderCursor ==? l:k)
-                    let s:wordUnderCursor_tmp = g:toggle_pairs[l:k]
+                    let s:wordUnderCursor_tmp = s:toggle_pairs[l:k]
                     let s:toggleDone = 1
                     break
                 endif
