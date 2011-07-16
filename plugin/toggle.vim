@@ -22,7 +22,6 @@
 "  >        <->     <
 "  define   <->     undef
 "  ||       <->     &&
-"  &&       <->     ||
 "  public   <->     private     <->     protected
 "
 "  If cursor is positioned on a number, the function looks for a + 
@@ -126,7 +125,7 @@ endfunction
 " Rem : <cword> is the word under or after the cursor
 " copy GetCurrentWord() from http://www.vim.org/scripts/script.php?script_id=143
 function! s:Toggle_getCurrentWord()
-  let c = col ('.')-1
+  let c = col('.')
   let l = line('.')
   let ll = getline(l)
   let ll1 = strpart(ll,0,c)
