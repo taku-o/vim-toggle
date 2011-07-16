@@ -47,6 +47,7 @@
 "   - private,public,protected toggle changing is supported.
 "   - g:toggle_pairs option is added.
 "   - custom key map is supported.
+"   - fix <cword> problem. relace <cword> to strict function.
 " v 0.5, 15 September 2010
 "   - case insensitive toggling, keep case
 "   - Bugfix for && and ||
@@ -104,7 +105,7 @@ vnoremap <Plug>ToggleV <ESC>:call <SID>Toggle()<CR>
 if exists('g:toggle_pairs')
     let s:toggle_pairs = g:toggle_pairs
 else
-    let s:toggle_pairs = []
+    let s:toggle_pairs = {}
 endif
 
 "--------------------------------------------------
@@ -119,6 +120,24 @@ endfunction
 
 function! s:Toggle_changeString(string, beginPos, endPos, newString)
   return strpart(a:string, 0, a:beginPos) . a:newString . strpart(a:string, a:endPos+1)
+endfunction
+
+" Return the word before the cursor, uses spaces to delimitate
+" Rem : <cword> is the word under or after the cursor
+" copy GetCurrentWord() from http://www.vim.org/scripts/script.php?script_id=143
+function! s:Toggle_getCurrentWord()
+  let c = col ('.')-1
+  let l = line('.')
+  let ll = getline(l)
+  let ll1 = strpart(ll,0,c)
+  let ll1 = matchstr(ll1,'\S*$')
+  if strlen(ll1) == 0
+    return ll1
+  else
+    let ll2 = strpart(ll,c,strlen(ll)-c+1)
+    let ll2 = strpart(ll2,0,match(ll2,'$\|\s'))
+    return ll1.ll2
+  endif
 endfunction
 " }}}
 
@@ -231,7 +250,7 @@ function! s:Toggle() "{{{
     if (s:toggleDone == 0)
         let s:wordUnderCursor_tmp = ''
 "                 
-        let s:wordUnderCursor = expand("<cword>")
+        let s:wordUnderCursor = s:Toggle_getCurrentWord()
         if (s:wordUnderCursor ==? "true")
             let s:wordUnderCursor_tmp = "false"
             let s:toggleDone = 1
