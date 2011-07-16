@@ -91,7 +91,7 @@ inoremap <Plug>ToggleI <C-O>:call <SID>Toggle()<CR>
 if !has('<Plug>ToggleN')
     nmap + <Plug>ToggleN
 endif
-nnoremap <Plug>ToggleN :call <SID>Toggle()<CR>
+nnoremap <Plug>ToggleN :<C-U>call <SID>Toggle()<CR>
 
 if !has('<Plug>ToggleV')
     vmap + <Plug>ToggleV
