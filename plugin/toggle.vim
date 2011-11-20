@@ -41,6 +41,8 @@
 "   in visual mode?
 "
 " Changelog:
+" v 0.5-forked, 21 November 2011
+"   - fix custom mapping logic.
 " v 0.5-forked, 21 June 2011
 "   - forked.
 "   - private,public,protected toggle changing is supported.
