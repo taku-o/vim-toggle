@@ -83,17 +83,17 @@ set cpo&vim
 "   nmap <C-C> <Plug>ToggleN
 "   vmap <C-C> <Plug>ToggleV
 "
-if !has('<Plug>ToggleI')
+if !hasmapto('<Plug>ToggleI', 'i')
     imap <C-T> <Plug>ToggleI
 endif
 inoremap <Plug>ToggleI <C-O>:call <SID>Toggle()<CR>
 
-if !has('<Plug>ToggleN')
+if !hasmapto('<Plug>ToggleN', 'n')
     nmap + <Plug>ToggleN
 endif
 nnoremap <Plug>ToggleN :<C-U>call <SID>Toggle()<CR>
 
-if !has('<Plug>ToggleV')
+if !hasmapto('<Plug>ToggleV', 'v')
     vmap + <Plug>ToggleV
 endif
 vnoremap <Plug>ToggleV <ESC>:call <SID>Toggle()<CR>
